@@ -1,0 +1,94 @@
+#!/usr/bin/env sh
+
+OPTIND=1 # for POSIX compliance
+
+show_help() {
+  echo "Usage: mknote [-pr] [-t template_dir] [-ntemplate_name ] project_name 
+
+Positional Arguments:
+  project_name 		The name of the project
+
+Optional Arguments:
+  -p			Generates a python script
+  -r			Generates a R script
+  -t template_dir	Copies template from path into project folder
+  -n template_name	Identifies the tex file used as the tamplate
+"
+}
+
+
+template="$HOME/MSc/Templates/notes"
+template_name="doc.tex"
+verbose=0
+
+while getopts "h?prt:n:" opt; do
+    case "$opt" in
+    h|\?)
+        show_help
+        exit 0
+        ;;
+    p)  py=1
+        ;;
+    r)  R=1
+        ;;
+    t)  template=$OPTARG
+	;;
+    n)  template_name=$OPTARG
+	;;
+    esac
+done
+
+shift $((OPTIND-1))
+
+[ "${1:-}" = "--" ] && shift
+
+if [ ! -d "$template" ]; then
+    echo "Template directory not found"
+    exit 0
+fi
+
+
+PROJECT_NAME=$1
+
+make_project() {
+    mkdir $PROJECT_NAME
+    cd $PROJECT_NAME
+}
+
+copy_template() {
+    # Copies a template to project directory and opens tex file
+    #
+    # Args:
+    #	$1: (path) path to template
+    #
+    mkdir tex
+    cp -r "$1"/* "tex/"
+    if [ -f tex/$template_name ]; then
+	mv tex/$template_name "tex/$PROJECT_NAME.tex"
+    fi
+    $TERMINAL -e nvim tex/*.tex &
+}
+
+make_file() {
+    # Makes a script file and launches an editor with that file
+    #
+    # Args:
+    #	$1: (string) file type
+    #
+    SCRIPT_NAME=$PROJECT_NAME.$1
+    touch $SCRIPT_NAME
+    $TERMINAL -e $EDITOR $SCRIPT_NAME &
+}
+
+
+make_project
+copy_template $template
+
+if [ $py ]; then
+    make_file "py"
+fi
+
+if [ $R ]; then
+    make_file "r"
+fi
+
