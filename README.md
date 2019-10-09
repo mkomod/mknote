@@ -12,7 +12,7 @@ $ git clone https://github.com/mkomod/mknote
 ## Usage
 
 ```
-Usage: mknote [-pr] [-t template_dir] [-ntemplate_name ] project_name 
+Usage: mknote [-pr] [-t template_dir] [-n template_name ] project_name 
 
 Positional Arguments:
   project_name 		The name of the project
@@ -24,6 +24,6 @@ Optional Arguments:
   -n template_name	Identifies the tex file used as the tamplate
 ```
 
-** Note there is a default template variable set in the source, the path should be changed.
+**Note** there is a default template variable set in the source, the path should be changed.
 
 
