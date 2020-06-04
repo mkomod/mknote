@@ -26,7 +26,6 @@ optional arguments:
 
 ```
 Templates
- ├── cw
  ├── note
  │   └── doc.tex
  ├── pres
