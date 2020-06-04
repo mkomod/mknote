@@ -1,94 +1,60 @@
-#!/usr/bin/env sh
+#!/usr/bin/env python
 
-OPTIND=1 # for POSIX compliance
-
-show_help() {
-  echo "Usage: mknote [-pr] [-t template_dir] [-ntemplate_name ] project_name 
-
-Positional Arguments:
-  project_name 		The name of the project
-
-Optional Arguments:
-  -p			Generates a python script
-  -r			Generates a R script
-  -t template_dir	Copies template from path into project folder
-  -n template_name	Identifies the tex file used as the tamplate
-"
-}
+import argparse
+import os
+import sys
+import re
+import shutil
 
 
-template="$HOME/MSc/Templates/notes"
-template_name="doc.tex"
-verbose=0
-
-while getopts "h?prt:n:" opt; do
-    case "$opt" in
-    h|\?)
-        show_help
-        exit 0
-        ;;
-    p)  py=1
-        ;;
-    r)  R=1
-        ;;
-    t)  template=$OPTARG
-	;;
-    n)  template_name=$OPTARG
-	;;
-    esac
-done
-
-shift $((OPTIND-1))
-
-[ "${1:-}" = "--" ] && shift
-
-if [ ! -d "$template" ]; then
-    echo "Template directory not found"
-    exit 0
-fi
+BASE_DIR = os.path.expandvars("$HOME/Templates/")
+INFO_FILE = os.path.join(BASE_DIR, "templates")
+CURR_DIR = os.getcwd()
 
 
-PROJECT_NAME=$1
-
-make_project() {
-    mkdir $PROJECT_NAME
-    cd $PROJECT_NAME
-}
-
-copy_template() {
-    # Copies a template to project directory and opens tex file
-    #
-    # Args:
-    #	$1: (path) path to template
-    #
-    mkdir tex
-    cp -r "$1"/* "tex/"
-    if [ -f tex/$template_name ]; then
-	mv tex/$template_name "tex/$PROJECT_NAME.tex"
-    fi
-    $TERMINAL -e nvim tex/*.tex &
-}
-
-make_file() {
-    # Makes a script file and launches an editor with that file
-    #
-    # Args:
-    #	$1: (string) file type
-    #
-    SCRIPT_NAME=$PROJECT_NAME.$1
-    touch $SCRIPT_NAME
-    $TERMINAL -e $EDITOR $SCRIPT_NAME &
-}
+def print_templates():
+    with open(INFO_FILE) as f:
+        sys.stderr.write("\nAvialable Templates\n")
+        sys.stderr.write(f.read())
 
 
-make_project
-copy_template $template
+class Parser(argparse.ArgumentParser):
 
-if [ $py ]; then
-    make_file "py"
-fi
+    def print_help(self):
+        super().print_help()
+        print_templates()
 
-if [ $R ]; then
-    make_file "r"
-fi
+    def error(self, message):
+        self.print_help()
+        sys.exit(2)
+
+parser = Parser()
+parser.add_argument(
+        "project_name",
+        type=str,
+        help="The project name.")
+parser.add_argument(
+        "-t",
+        type=str,
+        default="note",
+        help="Template to use (default: note)")
+
+args = parser.parse_args()
+
+
+try:
+    project_loc = os.path.join(CURR_DIR, args.project_name + "/tex")
+    shutil.copytree(os.path.join(BASE_DIR, args.t), project_loc)
+
+    doc_file = os.path.join(project_loc, "doc.tex")
+    proj_file = os.path.join(project_loc, args.project_name + ".tex")
+    shutil.move(doc_file, proj_file)
+except FileExistsError:
+    sys.stderr.write("Project file already exists\n")
+    sys.exit(2)
+except FileNotFoundError:
+    sys.stderr.write("Template not found\n")
+    print_templates()
+    sys.exit(2)
+
 
