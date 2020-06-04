@@ -25,13 +25,13 @@ optional arguments:
 **Note** Default Templates directory set to `$HOME/Templates`. The directory should be of the form
 
 ```
-/home/michael/Templates/
-├── cw
-├── note
-│   └── doc.tex
-├── pres
-│   └── doc.tex
-└── templates
+Templates
+ ├── cw
+ ├── note
+ │   └── doc.tex
+ ├── pres
+ │   └── doc.tex
+ └── templates
 ```
 
 The `templates` file contains a description of the templates in the directory i.e
