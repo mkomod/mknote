@@ -1,7 +1,7 @@
 
 # mknote
 
-A command line interface used to create course work and note files. Optionally creates script files like R scripts / Python scripts and opens them in your editor of choice.
+A command line interface used to create course work and note files.
 
 ## Installation
 
@@ -12,18 +12,31 @@ $ git clone https://github.com/mkomod/mknote
 ## Usage
 
 ```
-Usage: mknote [-pr] [-t template_dir] [-n template_name ] project_name 
+usage: mknote [-h] [-t T] project_name
 
-Positional Arguments:
-  project_name 		The name of the project
+positional arguments:
+  project_name  The project name.
 
-Optional Arguments:
-  -p			Generates a python script
-  -r			Generates a R script
-  -t template_dir	Copies template from path into project folder
-  -n template_name	Identifies the tex file used as the tamplate
+optional arguments:
+  -h, --help    show this help message and exit
+  -t T          Template to use (default: note)
 ```
 
-**Note** there is a default template variable set in the source, the path should be changed.
+**Note** Default Templates directory set to `$HOME/Templates`. The directory should be of the form
 
+```
+Templates/
+    - note/
+    - pres/
+    - templates
+```
+
+The `templates` file contains a description of the templates in the directory i.e
+
+```
+# templates
+
+note	Note taking
+pres	Presentations
+```
 
