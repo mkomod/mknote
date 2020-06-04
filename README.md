@@ -22,7 +22,7 @@ optional arguments:
   -t T          Template to use (default: note)
 ```
 
-**Note** Default Templates directory set to `$HOME/Templates`. The directory should be of the form
+**Note** Default Templates directory set to `$HOME/Documents/Templates`. The directory should be of the form
 
 ```
 Templates
